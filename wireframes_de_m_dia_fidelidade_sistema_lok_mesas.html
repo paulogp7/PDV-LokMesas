@@ -1,0 +1,2868 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wireframes de Média Fidelidade — Sistema Lok Mesas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ==========================================================================
+       1. DESIGN TOKENS & BASE (ESCALA DE CINZA + AZUL DESTAQUE + 3 STATUS)
+       ========================================================================== */
+    :root {
+      --bg-page: #E5E7EB;
+      --bg-app: #F3F4F6;
+      --bg-surface: #FFFFFF;
+      --bg-muted: #F9FAFB;
+      --border-wire: #D1D5DB;
+      --border-strong: #9CA3AF;
+      --text-main: #111827;
+      --text-sec: #4B5563;
+      --text-muted: #6B7280;
+
+      /* Cor de destaque única */
+      --accent: #2563EB;
+      --accent-hover: #1D4ED8;
+      --accent-soft: #EFF6FF;
+      --accent-border: #BFDBFE;
+
+      /* Cores de status semânticas */
+      --ok-text: #16A34A;
+      --ok-bg: #DCFCE7;
+      --ok-border: #86EFAC;
+
+      --warn-text: #B45309;
+      --warn-bg: #FEF3C7;
+      --warn-border: #FDE68A;
+
+      --err-text: #DC2626;
+      --err-bg: #FEE2E2;
+      --err-border: #FCA5A5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-size: 16px;
+      line-height: 1.45;
+      padding-top: 76px;
+      padding-bottom: 64px;
+    }
+
+    body.print-mode {
+      padding-top: 16px;
+      background-color: #FFFFFF;
+    }
+
+    /* ==========================================================================
+       2. BARRA FIXA DE CONTROLE DE APRESENTAÇÃO (FORA DOS WIREFRAMES)
+       ========================================================================== */
+    .presenter-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: #111827;
+      color: #F9FAFB;
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 2px solid #374151;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    body.print-mode .presenter-bar {
+      display: none;
+    }
+
+    .presenter-restore-btn {
+      display: none;
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 1000;
+      background: #111827;
+      color: #FFFFFF;
+      border: 2px solid #374151;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      opacity: 0.85;
+    }
+
+    .presenter-restore-btn:hover {
+      opacity: 1;
+    }
+
+    body.print-mode .presenter-restore-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .presenter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .presenter-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #D1D5DB;
+    }
+
+    .presenter-select,
+    .presenter-btn {
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid #4B5563;
+      background: #1F2937;
+      color: #FFFFFF;
+      cursor: pointer;
+    }
+
+    .presenter-btn:hover,
+    .presenter-select:hover {
+      background: #374151;
+    }
+
+    .presenter-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .presenter-btn.primary:hover {
+      background: var(--accent-hover);
+    }
+
+    /* ==========================================================================
+       3. CONTAINER DE SLIDE (16:9 / CAPTURA PPTX)
+       ========================================================================== */
+    .slides-wrapper {
+      max-width: 1760px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .slide-frame {
+      background: #FFFFFF;
+      border: 2px solid #9CA3AF;
+      border-radius: 12px;
+      padding: 28px 32px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      page-break-after: always;
+    }
+
+    .slide-frame.hidden-slide {
+      display: none;
+    }
+
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--border-wire);
+      padding-bottom: 14px;
+    }
+
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .slide-badge-deck {
+      background: var(--bg-app);
+      border: 1px solid var(--border-wire);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sec);
+    }
+
+    .slide-footer {
+      border-top: 2px solid var(--border-wire);
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-sec);
+    }
+
+    /* ==========================================================================
+       4. PALCO LADO A LADO: DESKTOP (1280x720) + MOBILE (390x844)
+       ========================================================================== */
+    .viewports-stage {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 28px;
+    }
+
+    .viewport-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .viewport-caption {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-sec);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Moldura Desktop 1280x720 */
+    .desktop-frame {
+      width: 1280px;
+      height: 720px;
+      background: var(--bg-app);
+      border: 2px solid #6B7280;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Moldura Mobile 390x844 */
+    .mobile-frame {
+      width: 390px;
+      height: 844px;
+      background: var(--bg-app);
+      border: 6px solid #374151;
+      border-radius: 28px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-notch {
+      height: 22px;
+      background: #374151;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .mobile-notch-pill {
+      width: 90px;
+      height: 6px;
+      background: #1F2937;
+      border-radius: 99px;
+    }
+
+    /* ==========================================================================
+       5. COMPONENTES DE WIREFRAME (ACESSÍVEIS: BOTÕES >= 48PX, FONTES >= 15PX)
+       ========================================================================== */
+    /* Barra Superior do Sistema */
+    .app-topbar {
+      height: 60px;
+      background: var(--bg-surface);
+      border-bottom: 2px solid var(--border-wire);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .mobile-frame .app-topbar {
+      padding: 0 14px;
+      height: 56px;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 19px;
+      color: var(--text-main);
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--accent);
+      color: #FFFFFF;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .role-badge {
+      background: var(--bg-app);
+      border: 1px solid var(--border-strong);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* Shell Desktop: Menu Lateral + Área de Conteúdo */
+    .desktop-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .desktop-sidebar {
+      width: 210px;
+      background: var(--bg-surface);
+      border-right: 2px solid var(--border-wire);
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .nav-item {
+      min-height: 48px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-sec);
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    body.role-atendente .gestor-only {
+      display: none !important;
+    }
+
+    .desktop-main {
+      flex: 1;
+      padding: 18px 22px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Shell Mobile: Conteúdo + Barra Inferior Fixa */
+    .mobile-main {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mobile-bottom-nav {
+      height: 66px;
+      background: var(--bg-surface);
+      border-top: 2px solid var(--border-wire);
+      display: flex;
+      align-items: stretch;
+      justify-content: space-around;
+      flex-shrink: 0;
+    }
+
+    .mobile-nav-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sec);
+      padding: 4px 2px;
+    }
+
+    .mobile-nav-btn.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-top: 3px solid var(--accent);
+      font-weight: 700;
+    }
+
+    /* Botões Wireframe (Altura mínima 48px) */
+    .btn {
+      min-height: 48px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      border: 2px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #FFFFFF;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .btn-sm-square {
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    /* Inputs e Formulários */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .input-box {
+      min-height: 48px;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 16px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .input-box.error {
+      border-color: var(--err-text);
+      background: #FFF5F5;
+    }
+
+    .input-placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Cards & Painéis */
+    .wire-card {
+      background: var(--bg-surface);
+      border: 2px solid var(--border-wire);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .wire-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .wire-card.row-danger {
+      background: var(--err-bg);
+      border-color: var(--err-border);
+    }
+
+    /* Selos / Badges Semânticos */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .badge-ok {
+      background: var(--ok-bg);
+      color: var(--ok-text);
+      border-color: var(--ok-border);
+    }
+
+    .badge-warn {
+      background: var(--warn-bg);
+      color: var(--warn-text);
+      border-color: var(--warn-border);
+    }
+
+    .badge-err {
+      background: var(--err-bg);
+      color: var(--err-text);
+      border-color: var(--err-border);
+    }
+
+    .badge-neutral {
+      background: var(--bg-app);
+      color: var(--text-main);
+      border-color: var(--border-strong);
+    }
+
+    .badge-blue {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: var(--accent-border);
+    }
+
+    /* Banners / Alertas */
+    .alert-box {
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 2px solid;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert-err {
+      background: var(--err-bg);
+      border-color: var(--err-text);
+      color: var(--err-text);
+    }
+
+    .alert-warn {
+      background: var(--warn-bg);
+      border-color: var(--warn-text);
+      color: var(--warn-text);
+    }
+
+    /* Abas e Chips de Filtro */
+    .tabs-row {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--border-wire);
+      padding-bottom: 8px;
+    }
+
+    .tab-btn {
+      min-height: 48px;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 2px solid var(--border-wire);
+      background: var(--bg-surface);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-sec);
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #FFFFFF;
+    }
+
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      min-height: 40px;
+      padding: 6px 14px;
+      border-radius: 99px;
+      border: 2px solid var(--border-strong);
+      background: var(--bg-surface);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .chip.active {
+      background: var(--text-main);
+      border-color: var(--text-main);
+      color: #FFFFFF;
+    }
+
+    /* Tabelas Wireframe */
+    .wire-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-wire);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 15px;
+    }
+
+    .wire-table th,
+    .wire-table td {
+      padding: 11px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-wire);
+    }
+
+    .wire-table th {
+      background: var(--bg-muted);
+      font-weight: 700;
+      color: var(--text-sec);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    .wire-table tr.tr-err {
+      background: var(--err-bg);
+    }
+
+    /* Utilitários de Layout */
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .flex-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .sub-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .text-sm {
+      font-size: 15px;
+      color: var(--text-sec);
+    }
+
+    /* ==========================================================================
+       6. ESTILOS ESPECÍFICOS: TIMELINE, GRÁFICO CSS E FOLHA A4 P&B
+       ========================================================================== */
+    /* Linha do tempo horizontal */
+    .timeline-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-wire);
+      border-radius: 10px;
+      padding: 14px 18px;
+      gap: 8px;
+    }
+
+    .tl-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .tl-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      border: 2px solid var(--border-strong);
+      background: var(--bg-app);
+      color: var(--text-sec);
+    }
+
+    .tl-step.done .tl-dot {
+      background: var(--ok-text);
+      border-color: var(--ok-text);
+      color: #FFFFFF;
+    }
+
+    .tl-step.current .tl-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #FFFFFF;
+    }
+
+    .tl-line {
+      flex: 1;
+      height: 3px;
+      background: var(--border-strong);
+      min-width: 16px;
+    }
+
+    .tl-line.done {
+      background: var(--ok-text);
+    }
+
+    /* Gráfico de Barras em CSS Puro */
+    .bar-chart-wrap {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      height: 185px;
+      padding: 24px 16px 8px 16px;
+      border-bottom: 2px solid var(--border-strong);
+      background: var(--bg-muted);
+      border-radius: 8px 8px 0 0;
+    }
+
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+      gap: 6px;
+    }
+
+    .bar-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .bar-fill {
+      width: 100%;
+      max-width: 48px;
+      background: var(--accent);
+      border-radius: 6px 6px 0 0;
+      border: 1px solid #1D4ED8;
+    }
+
+    .bar-day {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-sec);
+    }
+
+    /* Folha A4 Preto e Branco (Extra) */
+    .a4-paper {
+      width: 794px;
+      min-height: 1040px;
+      background: #FFFFFF;
+      color: #000000;
+      border: 2px solid #000000;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+      padding: 36px 42px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .a4-box {
+      border: 1.5px solid #000000;
+      padding: 12px 14px;
+    }
+
+    .a4-box-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #000000;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+    }
+
+    .a4-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    .a4-table th,
+    .a4-table td {
+      border: 1.5px solid #000000;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .a4-table th {
+      background: #F3F4F6;
+      font-weight: 800;
+    }
+
+    .ruled-line {
+      height: 26px;
+      border-bottom: 1px solid #000000;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #FFFFFF;
+      }
+      .presenter-bar,
+      .presenter-restore-btn {
+        display: none !important;
+      }
+      .slide-frame {
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR DE CONTROLE PARA APRESENTAÇÃO / CAPTURA PPTX -->
+  <div class="presenter-bar" id="presenterBar">
+    <div class="presenter-group">
+      <span class="presenter-label">Lok Mesas — Wireframes (10 Telas):</span>
+      <select class="presenter-select" id="slideSelector" aria-label="Selecionar tela">
+        <option value="all">Exibir Todas as 10 Telas (Rolar página)</option>
+        <option value="slide-fig2">Fig. 2 — Tela de Login (UC01)</option>
+        <option value="slide-fig3">Fig. 3 — Dashboard de Pedidos (UC12)</option>
+        <option value="slide-fig4">Fig. 4 — Busca e Cadastro de Cliente (UC02, UC03)</option>
+        <option value="slide-fig5">Fig. 5 — Novo Pedido de Locação (UC04, UC05, UC07)</option>
+        <option value="slide-fig6">Fig. 6 — Detalhe do Pedido (UC08, UC09, UC06)</option>
+        <option value="slide-fig7">Fig. 7 — Registrar Pagamento (UC10)</option>
+        <option value="slide-fig8">Fig. 8 — PDV: Venda de Balcão (UC11, UC13)</option>
+        <option value="slide-fig9">Fig. 9 — Produtos e Estoque [Gestor] (UC14)</option>
+        <option value="slide-fig10">Fig. 10 — Relatório de Faturamento [Gestor] (UC15)</option>
+        <option value="slide-extra">Extra — Ficha de Entrega / Retirada A4 (UC09)</option>
+      </select>
+      <button type="button" class="presenter-btn" id="prevSlideBtn">◀ Anterior</button>
+      <button type="button" class="presenter-btn" id="nextSlideBtn">Próximo ▶</button>
+    </div>
+
+    <div class="presenter-group">
+      <span class="presenter-label">Perfil Simulado:</span>
+      <button type="button" class="presenter-btn" id="toggleRoleBtn">Perfil: Gestor (Alternar)</button>
+      <button type="button" class="presenter-btn primary" id="togglePrintBtn">Modo Print (Ocultar barra)</button>
+    </div>
+  </div>
+
+  <!-- BOTÃO FLUTUANTE DISCRETO PARA SAIR DO MODO PRINT -->
+  <button type="button" class="presenter-restore-btn" id="restoreBarBtn">
+    Mostrar barra de navegação
+  </button>
+
+  <main class="slides-wrapper" id="slidesWrapper">
+
+    <!-- ========================================================================
+         SLIDE 1 — FIG. 2: TELA DE LOGIN (UC01)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-fig2">
+      <header class="slide-header">
+        <h1 class="slide-title">Figura 2 — Tela de Login</h1>
+        <span class="slide-badge-deck">Slide 1 de 10 • Wireframe Média Fidelidade</span>
+      </header>
+
+      <div class="viewports-stage">
+        <!-- DESKTOP 1280x720 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Desktop (1280 × 720)</span>
+            <span>Sem menu lateral</span>
+          </div>
+          <div class="desktop-frame" style="justify-content: center; align-items: center; padding: 24px;">
+            <div class="wire-card" style="width: 440px; padding: 32px; display: flex; flex-direction: column; gap: 18px;">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <div class="brand-icon" style="width: 52px; height: 52px; font-size: 22px;">LM</div>
+                <div style="font-size: 26px; font-weight: 800;">Lok Mesas</div>
+                <div class="text-sm">Acesse o sistema de locação e PDV</div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Usuário</label>
+                <div class="input-box">carlos.silva</div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Senha</label>
+                <div class="input-box" style="padding-right: 6px;">
+                  <span>••••••••</span>
+                  <button type="button" class="btn" style="min-height: 36px; padding: 4px 12px; font-size: 14px;">Mostrar</button>
+                </div>
+              </div>
+
+              <div class="alert-box alert-err">
+                <span>✕</span>
+                <span>Usuário ou senha incorretos</span>
+              </div>
+
+              <button type="button" class="btn btn-primary btn-block">Entrar</button>
+
+              <div style="text-align: center; font-size: 14px; color: var(--text-muted); margin-top: 6px; border-top: 1px solid var(--border-wire); padding-top: 12px;">
+                Sistema de gestão Lok Mesas
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE 390x844 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Mobile (390 × 844)</span>
+            <span>Tela inicial</span>
+          </div>
+          <div class="mobile-frame">
+            <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px;">
+              <div class="wire-card" style="padding: 24px 18px; display: flex; flex-direction: column; gap: 16px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                  <div class="brand-icon" style="width: 48px; height: 48px; font-size: 20px;">LM</div>
+                  <div style="font-size: 24px; font-weight: 800;">Lok Mesas</div>
+                  <div class="text-sm" style="text-align: center;">Acesso ao sistema</div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label">Usuário</label>
+                  <div class="input-box">carlos.silva</div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label">Senha</label>
+                  <div class="input-box" style="padding-right: 6px;">
+                    <span>••••••••</span>
+                    <button type="button" class="btn" style="min-height: 36px; padding: 4px 10px; font-size: 14px;">Mostrar</button>
+                  </div>
+                </div>
+
+                <div class="alert-box alert-err" style="font-size: 14px; padding: 10px 12px;">
+                  <span>✕</span>
+                  <span>Usuário ou senha incorretos</span>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-block">Entrar</button>
+
+                <div style="text-align: center; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-wire); padding-top: 10px;">
+                  Sistema de gestão Lok Mesas
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC01 | Requisitos: RF01</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+    <!-- ========================================================================
+         SLIDE 2 — FIG. 3: DASHBOARD DE PEDIDOS DO DIA/SEMANA (UC12)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-fig3">
+      <header class="slide-header">
+        <h1 class="slide-title">Figura 3 — Tela de Dashboard de Pedidos do Dia e Semana</h1>
+        <span class="slide-badge-deck">Slide 2 de 10 • Wireframe Média Fidelidade</span>
+      </header>
+
+      <div class="viewports-stage">
+        <!-- DESKTOP 1280x720 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Desktop (1280 × 720)</span>
+            <span>Menu lateral + Cards clicáveis</span>
+          </div>
+          <div class="desktop-frame">
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon">LM</span><span>Lok Mesas</span></div>
+              <div class="user-info">
+                <span>Carlos Silva</span>
+                <span class="role-badge role-label-target">Gestor</span>
+              </div>
+            </div>
+            <div class="desktop-body">
+              <aside class="desktop-sidebar">
+                <div class="nav-item active"><span>▣</span><span>Pedidos</span></div>
+                <div class="nav-item"><span>☺</span><span>Clientes</span></div>
+                <div class="nav-item"><span>⊞</span><span>Vendas (PDV)</span></div>
+                <div class="nav-item gestor-only"><span>◫</span><span>Estoque</span></div>
+                <div class="nav-item gestor-only"><span>▤</span><span>Relatórios</span></div>
+              </aside>
+
+              <div class="desktop-main">
+                <div class="flex-between">
+                  <div class="tabs-row" style="border-bottom: none; padding-bottom: 0;">
+                    <button type="button" class="tab-btn active">Hoje (14/11)</button>
+                    <button type="button" class="tab-btn">Semana</button>
+                  </div>
+                  <button type="button" class="btn btn-primary">+ Novo pedido</button>
+                </div>
+
+                <div class="chips-row">
+                  <span class="chip active">Todos (5)</span>
+                  <span class="chip">Confirmado</span>
+                  <span class="chip">Entregue</span>
+                  <span class="chip">Retirado</span>
+                  <span class="chip">Pagamento pendente</span>
+                </div>
+
+                <!-- 5 Cards de Pedido -->
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <!-- Card 1 (Destaque obrigatório) -->
+                  <div class="wire-card flex-between" style="border-left: 6px solid var(--accent);">
+                    <div>
+                      <div class="flex-row">
+                        <strong style="font-size: 17px;">#1042 • Ludmila Carolina</strong>
+                        <span class="badge badge-neutral">⌂ Chácara</span>
+                      </div>
+                      <div class="text-sm" style="margin-top: 4px;">Bairro: <strong>Taquaral</strong> • Entrega hoje às <strong>14:00</strong></div>
+                    </div>
+                    <div class="flex-row" style="gap: 12px;">
+                      <strong style="font-size: 18px;">R$ 950,00</strong>
+                      <span class="badge badge-blue">Confirmado</span>
+                      <span class="badge badge-err">Pendente</span>
+                      <span style="font-weight: 800; color: var(--text-sec);">›</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 2 -->
+                  <div class="wire-card flex-between">
+                    <div>
+                      <div class="flex-row">
+                        <strong style="font-size: 17px;">#1041 • Roberto Almeida</strong>
+                        <span class="badge badge-neutral">⌂ Residencial</span>
+                      </div>
+                      <div class="text-sm" style="margin-top: 4px;">Bairro: <strong>Cambuí</strong> • Entrega hoje às <strong>10:30</strong></div>
+                    </div>
+                    <div class="flex-row" style="gap: 12px;">
+                      <strong style="font-size: 18px;">R$ 320,00</strong>
+                      <span class="badge badge-ok">Entregue</span>
+                      <span class="badge badge-ok">Pago</span>
+                      <span style="font-weight: 800; color: var(--text-sec);">›</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 3 -->
+                  <div class="wire-card flex-between">
+                    <div>
+                      <div class="flex-row">
+                        <strong style="font-size: 17px;">#1040 • Fernanda Costa</strong>
+                        <span class="badge badge-neutral">⌂ Chácara</span>
+                      </div>
+                      <div class="text-sm" style="margin-top: 4px;">Bairro: <strong>Barão Geraldo</strong> • Entrega hoje às <strong>16:00</strong></div>
+                    </div>
+                    <div class="flex-row" style="gap: 12px;">
+                      <strong style="font-size: 18px;">R$ 1.480,00</strong>
+                      <span class="badge badge-blue">Confirmado</span>
+                      <span class="badge badge-warn">Parcial</span>
+                      <span style="font-weight: 800; color: var(--text-sec);">›</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 4 -->
+                  <div class="wire-card flex-between">
+                    <div>
+                      <div class="flex-row">
+                        <strong style="font-size: 17px;">#1039 • Marcos Vinícius</strong>
+                        <span class="badge badge-neutral">⌂ Residencial</span>
+                      </div>
+                      <div class="text-sm" style="margin-top: 4px;">Bairro: <strong>Jardim Guanabara</strong> • Retirada hoje às <strong>17:30</strong></div>
+                    </div>
+                    <div class="flex-row" style="gap: 12px;">
+                      <strong style="font-size: 18px;">R$ 240,00</strong>
+                      <span class="badge badge-ok">Entregue</span>
+                      <span class="badge badge-ok">Pago</span>
+                      <span style="font-weight: 800; color: var(--text-sec);">›</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 5 -->
+                  <div class="wire-card flex-between">
+                    <div>
+                      <div class="flex-row">
+                        <strong style="font-size: 17px;">#1038 • Juliana Pereira</strong>
+                        <span class="badge badge-neutral">⌂ Residencial</span>
+                      </div>
+                      <div class="text-sm" style="margin-top: 4px;">Bairro: <strong>Vila Industrial</strong> • Retirado às <strong>09:00</strong></div>
+                    </div>
+                    <div class="flex-row" style="gap: 12px;">
+                      <strong style="font-size: 18px;">R$ 410,00</strong>
+                      <span class="badge badge-neutral">Retirado</span>
+                      <span class="badge badge-ok">Pago</span>
+                      <span style="font-weight: 800; color: var(--text-sec);">›</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE 390x844 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Mobile (390 × 844)</span>
+            <span>Barra inferior fixa</span>
+          </div>
+          <div class="mobile-frame">
+            <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon" style="width: 30px; height: 30px; font-size: 14px;">LM</span><span style="font-size: 17px;">Lok Mesas</span></div>
+              <div class="user-info" style="font-size: 14px;">
+                <span>Carlos</span>
+                <span class="role-badge role-label-target" style="font-size: 12px; padding: 3px 8px;">Gestor</span>
+              </div>
+            </div>
+
+            <div class="mobile-main">
+              <button type="button" class="btn btn-primary btn-block">+ Novo pedido</button>
+
+              <div class="grid-2">
+                <button type="button" class="tab-btn active">Hoje</button>
+                <button type="button" class="tab-btn">Semana</button>
+              </div>
+
+              <div class="chips-row" style="flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px;">
+                <span class="chip active">Todos</span>
+                <span class="chip">Confirmado</span>
+                <span class="chip">Entregue</span>
+                <span class="chip">Pendente</span>
+              </div>
+
+              <!-- Cards Mobile -->
+              <div class="wire-card" style="border-left: 5px solid var(--accent);">
+                <div class="flex-between">
+                  <strong>Ludmila Carolina</strong>
+                  <strong>R$ 950,00</strong>
+                </div>
+                <div class="text-sm" style="margin: 4px 0 8px 0;">Taquaral • Entrega 14:00 • ⌂ Chácara</div>
+                <div class="flex-row">
+                  <span class="badge badge-blue">Confirmado</span>
+                  <span class="badge badge-err">Pendente</span>
+                </div>
+              </div>
+
+              <div class="wire-card">
+                <div class="flex-between">
+                  <strong>Roberto Almeida</strong>
+                  <strong>R$ 320,00</strong>
+                </div>
+                <div class="text-sm" style="margin: 4px 0 8px 0;">Cambuí • Entrega 10:30 • ⌂ Residencial</div>
+                <div class="flex-row">
+                  <span class="badge badge-ok">Entregue</span>
+                  <span class="badge badge-ok">Pago</span>
+                </div>
+              </div>
+
+              <div class="wire-card">
+                <div class="flex-between">
+                  <strong>Fernanda Costa</strong>
+                  <strong>R$ 1.480,00</strong>
+                </div>
+                <div class="text-sm" style="margin: 4px 0 8px 0;">Barão Geraldo • 16:00 • ⌂ Chácara</div>
+                <div class="flex-row">
+                  <span class="badge badge-blue">Confirmado</span>
+                  <span class="badge badge-warn">Parcial</span>
+                </div>
+              </div>
+
+              <div class="wire-card">
+                <div class="flex-between">
+                  <strong>Marcos Vinícius</strong>
+                  <strong>R$ 240,00</strong>
+                </div>
+                <div class="text-sm" style="margin: 4px 0 8px 0;">Jd. Guanabara • Ret. 17:30 • ⌂ Residencial</div>
+                <div class="flex-row">
+                  <span class="badge badge-ok">Entregue</span>
+                  <span class="badge badge-ok">Pago</span>
+                </div>
+              </div>
+            </div>
+
+            <nav class="mobile-bottom-nav">
+              <button type="button" class="mobile-nav-btn active"><span>▣</span><span>Pedidos</span></button>
+              <button type="button" class="mobile-nav-btn"><span>☺</span><span>Clientes</span></button>
+              <button type="button" class="mobile-nav-btn"><span>⊞</span><span>Vendas</span></button>
+              <button type="button" class="mobile-nav-btn gestor-only"><span>◫</span><span>Estoque</span></button>
+              <button type="button" class="mobile-nav-btn gestor-only"><span>▤</span><span>Relatórios</span></button>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC12 | Requisitos: RF12</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+    <!-- ========================================================================
+         SLIDE 3 — FIG. 4: BUSCA E CADASTRO DE CLIENTE (UC02, UC03)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-fig4">
+      <header class="slide-header">
+        <h1 class="slide-title">Figura 4 — Tela de Busca e Cadastro de Cliente</h1>
+        <span class="slide-badge-deck">Slide 3 de 10 • Wireframe Média Fidelidade</span>
+      </header>
+
+      <div class="viewports-stage">
+        <!-- DESKTOP 1280x720 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Desktop (1280 × 720)</span>
+            <span>Lista em tempo real + Painel lateral + Estado vazio</span>
+          </div>
+          <div class="desktop-frame">
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon">LM</span><span>Lok Mesas</span></div>
+              <div class="user-info">
+                <span>Carlos Silva</span>
+                <span class="role-badge role-label-target">Gestor</span>
+              </div>
+            </div>
+            <div class="desktop-body">
+              <aside class="desktop-sidebar">
+                <div class="nav-item"><span>▣</span><span>Pedidos</span></div>
+                <div class="nav-item active"><span>☺</span><span>Clientes</span></div>
+                <div class="nav-item"><span>⊞</span><span>Vendas (PDV)</span></div>
+                <div class="nav-item gestor-only"><span>◫</span><span>Estoque</span></div>
+                <div class="nav-item gestor-only"><span>▤</span><span>Relatórios</span></div>
+              </aside>
+
+              <div class="desktop-main">
+                <div class="flex-between">
+                  <h2 class="section-title">Clientes</h2>
+                  <button type="button" class="btn">+ Novo cliente</button>
+                </div>
+
+                <div class="input-box" style="border-color: var(--accent);">
+                  <span><strong>Ludmila</strong> <span class="input-placeholder" style="font-size: 14px;">(Buscar por telefone, CPF ou parte do nome)</span></span>
+                  <span style="font-weight: 700; color: var(--text-sec);">✕ Limpar</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; flex: 1;">
+                  <!-- Coluna Esquerda: Resultados + Estado Vazio -->
+                  <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div class="text-sm"><strong>2 clientes encontrados</strong> para "Ludmila":</div>
+
+                    <div class="wire-card selected">
+                      <div class="flex-between">
+                        <strong style="font-size: 17px;">Ludmila Carolina</strong>
+                        <span class="badge badge-blue">Selecionado</span>
+                      </div>
+                      <div class="text-sm" style="margin-top: 4px;">Tel: <strong>(19) 99999-1234</strong> • Bairro: <strong>Taquaral</strong></div>
+                      <div class="text-sm">Último pedido: <strong>10/11/2026</strong></div>
+                    </div>
+
+                    <div class="wire-card">
+                      <div class="flex-between">
+                        <strong style="font-size: 17px;">Ludmila Cristina Santos</strong>
+                        <span class="text-sm">Ver detalhes ›</span>
+                      </div>
+                      <div class="text-sm" style="margin-top: 4px;">Tel: <strong>(19) 98888-4321</strong> • Bairro: <strong>Cambuí</strong></div>
+                      <div class="text-sm">Último pedido: <strong>22/09/2026</strong></div>
+                    </div>
+
+                    <!-- Demonstração de Estado Vazio -->
+                    <div class="wire-card" style="background: var(--bg-muted); border-style: dashed; margin-top: auto;">
+                      <div class="flex-between">
+                        <div>
+                          <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Exemplo de Estado Vazio</div>
+                          <div style="font-size: 16px; font-weight: 700; margin-top: 2px;">Nenhum cliente encontrado</div>
+                        </div>
+                        <button type="button" class="btn btn-primary">Cadastrar novo cliente</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Coluna Direita: Painel Lateral de Detalhes -->
+                  <div class="wire-card" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div class="flex-between" style="border-bottom: 1px solid var(--border-wire); padding-bottom: 10px;">
+                      <h3 class="sub-title">Ludmila Carolina</h3>
+                      <button type="button" class="btn btn-primary" style="min-height: 40px; padding: 6px 12px; font-size: 14px;">+ Novo pedido</button>
+                    </div>
+                    <div class="text-sm"><strong>Telefone:</strong> (19) 99999-1234</div>
+                    <div class="text-sm"><strong>CPF:</strong> 345.678.912-00</div>
+                    <div class="text-sm"><strong>Endereço:</strong> Rua das Palmeiras, 450 — Taquaral, Campinas/SP</div>
+
+                    <div style="border-top: 1px solid var(--border-wire); padding-top: 10px; margin-top: 4px;">
+                      <strong style="font-size: 15px;">Histórico de pedidos (2)</strong>
+                      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                        <div style="background: var(--bg-app); padding: 10px; border-radius: 6px; border: 1px solid var(--border-wire);">
+                          <div class="flex-between"><strong>#1042 • 10/11/2026</strong><span class="badge badge-err">Pendente</span></div>
+                          <div class="text-sm">50 mesas, 200 cadeiras • R$ 1.100,00</div>
+                        </div>
+                        <div style="background: var(--bg-app); padding: 10px; border-radius: 6px; border: 1px solid var(--border-wire);">
+                          <div class="flex-between"><strong>#0988 • 15/08/2026</strong><span class="badge badge-ok">Pago</span></div>
+                          <div class="text-sm">20 mesas, 80 cadeiras • R$ 440,00</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE 390x844 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Mobile (390 × 844)</span>
+            <span>Busca + Detalhe + Estado vazio</span>
+          </div>
+          <div class="mobile-frame">
+            <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon" style="width: 30px; height: 30px; font-size: 14px;">LM</span><span style="font-size: 17px;">Clientes</span></div>
+              <button type="button" class="btn" style="min-height: 40px; padding: 6px 10px; font-size: 14px;">+ Novo</button>
+            </div>
+
+            <div class="mobile-main">
+              <div class="input-box" style="border-color: var(--accent);">
+                <span><strong>Ludmila</strong></span>
+                <span class="text-sm">Buscar</span>
+              </div>
+
+              <div class="wire-card selected">
+                <strong>Ludmila Carolina</strong>
+                <div class="text-sm">(19) 99999-1234 • Taquaral</div>
+                <div class="text-sm">Último pedido: 10/11/2026</div>
+              </div>
+
+              <div class="wire-card">
+                <strong>Ludmila Cristina Santos</strong>
+                <div class="text-sm">(19) 98888-4321 • Cambuí</div>
+                <div class="text-sm">Último pedido: 22/09/2026</div>
+              </div>
+
+              <!-- Ficha Aberta no Mobile -->
+              <div class="wire-card" style="display: flex; flex-direction: column; gap: 6px;">
+                <div class="flex-between">
+                  <strong>Ficha: Ludmila Carolina</strong>
+                  <span class="badge badge-blue">Ativa</span>
+                </div>
+                <div class="text-sm">CPF: 345.678.912-00</div>
+                <div class="text-sm">Rua das Palmeiras, 450 - Taquaral</div>
+                <div style="background: var(--bg-app); padding: 8px; border-radius: 6px; font-size: 14px; margin-top: 4px;">
+                  <strong>Histórico:</strong> #1042 (R$ 1.100,00) • #0988 (R$ 440,00)
+                </div>
+              </div>
+
+              <!-- Estado Vazio Compacto -->
+              <div class="wire-card" style="background: var(--bg-muted); border-style: dashed; text-align: center;">
+                <div class="text-sm" style="margin-bottom: 8px;">Nenhum cliente encontrado</div>
+                <button type="button" class="btn btn-primary btn-block">Cadastrar novo cliente</button>
+              </div>
+            </div>
+
+            <nav class="mobile-bottom-nav">
+              <button type="button" class="mobile-nav-btn"><span>▣</span><span>Pedidos</span></button>
+              <button type="button" class="mobile-nav-btn active"><span>☺</span><span>Clientes</span></button>
+              <button type="button" class="mobile-nav-btn"><span>⊞</span><span>Vendas</span></button>
+              <button type="button" class="mobile-nav-btn gestor-only"><span>◫</span><span>Estoque</span></button>
+              <button type="button" class="mobile-nav-btn gestor-only"><span>▤</span><span>Relatórios</span></button>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC02, UC03 | Requisitos: RF02, RF03</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+    <!-- ========================================================================
+         SLIDE 4 — FIG. 5: NOVO PEDIDO DE LOCAÇÃO (UC04, UC05, UC07)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-fig5">
+      <header class="slide-header">
+        <h1 class="slide-title">Figura 5 — Tela de Novo Pedido de Locação</h1>
+        <span class="slide-badge-deck">Slide 4 de 10 • Wireframe Média Fidelidade</span>
+      </header>
+
+      <div class="viewports-stage">
+        <!-- DESKTOP 1280x720 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Desktop (1280 × 720)</span>
+            <span>Formulário numerado à esquerda + Resumo à direita + Rodapé fixo</span>
+          </div>
+          <div class="desktop-frame">
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon">LM</span><span>Lok Mesas</span></div>
+              <div class="user-info">
+                <span>Carlos Silva</span>
+                <span class="role-badge role-label-target">Gestor</span>
+              </div>
+            </div>
+            <div class="desktop-body">
+              <aside class="desktop-sidebar">
+                <div class="nav-item active"><span>▣</span><span>Pedidos</span></div>
+                <div class="nav-item"><span>☺</span><span>Clientes</span></div>
+                <div class="nav-item"><span>⊞</span><span>Vendas (PDV)</span></div>
+                <div class="nav-item gestor-only"><span>◫</span><span>Estoque</span></div>
+                <div class="nav-item gestor-only"><span>▤</span><span>Relatórios</span></div>
+              </aside>
+
+              <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+                <div style="flex: 1; display: grid; grid-template-columns: 1.45fr 0.85fr; gap: 16px; padding: 14px 18px; overflow-y: auto;">
+                  <!-- Coluna Esquerda: Seções 1 a 6 -->
+                  <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <h2 class="section-title">Novo pedido de locação</h2>
+
+                    <!-- Seção 1 -->
+                    <div class="wire-card">
+                      <div class="field-label" style="margin-bottom: 6px;">1) Cliente</div>
+                      <div class="input-box">
+                        <span><strong>Ludmila Carolina — (19) 99999-1234</strong></span>
+                        <span class="badge badge-ok">Cadastrado</span>
+                      </div>
+                    </div>
+
+                    <!-- Seção 2 -->
+                    <div class="wire-card" style="display: flex; flex-direction: column; gap: 10px;">
+                      <div class="field-label">2) Tipo de evento</div>
+                      <div class="grid-2">
+                        <button type="button" class="btn">⌂ Residencial</button>
+                        <button type="button" class="btn btn-primary">✓ Chácara (Selecionado)</button>
+                      </div>
+                      <div class="grid-3" style="background: var(--accent-soft); padding: 10px; border-radius: 8px; border: 1px solid var(--accent-border);">
+                        <div class="field-group">
+                          <label class="field-label" style="font-size: 13px;">RG *</label>
+                          <div class="input-box" style="min-height: 40px; font-size: 14px;">44.123.456-7</div>
+                        </div>
+                        <div class="field-group">
+                          <label class="field-label" style="font-size: 13px;">CPF *</label>
+                          <div class="input-box" style="min-height: 40px; font-size: 14px;">345.678.912-00</div>
+                        </div>
+                        <div class="field-group">
+                          <label class="field-label" style="font-size: 13px;">Comprovante end. *</label>
+                          <button type="button" class="btn" style="min-height: 40px; font-size: 13px; padding: 4px 8px;">📎 Anexar</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Seção 3 & 4 -->
+                    <div class="wire-card grid-2">
+                      <div class="field-group" style="grid-column: span 2;">
+                        <label class="field-label">3) Endereço do evento</label>
+                        <div class="input-box" style="min-height: 42px;">Rua das Palmeiras, 450 - Chácara Primavera</div>
+                      </div>
+                      <div class="field-group">
+                        <label class="field-label">4) Entrega (Data e Hora)</label>
+                        <div class="input-box" style="min-height: 42px;">14/11/2026 • 10:00</div>
+                      </div>
+                      <div class="field-group">
+                        <label class="field-label">Retirada (Data e Hora)</label>
+                        <div class="input-box" style="min-height: 42px;">15/11/2026 • 18:00</div>
+                      </div>
+                    </div>
+
+                    <!-- Seção 5 -->
+                    <div class="wire-card" style="display: flex; flex-direction: column; gap: 8px;">
+                      <div class="flex-between">
+                        <span class="field-label">5) Itens da locação</span>
+                        <button type="button" class="btn" style="min-height: 40px; padding: 4px 12px; font-size: 14px;">+ Adicionar item</button>
+                      </div>
+                      <div class="input-box" style="min-height: 42px; font-size: 15px;">
+                        <span>Mesa plástica (opções: Mesa de metal, Bistrô)</span>
+                        <span>Qtd: <strong>50</strong> • Unit: <strong>R$ 10,00</strong></span>
+                      </div>
+                      <div class="input-box" style="min-height: 42px; font-size: 15px;">
+                        <span>Cadeira plástica</span>
+                        <span>Qtd: <strong>200</strong> • Unit: <strong>R$ 3,00</strong></span>
+                      </div>
+                      <div class="alert-box alert-warn" style="padding: 8px 12px; font-size: 14px;">
+                        <span>⚠</span>
+                        <span>Disponível no período: 150 conjuntos de mesas. Solicitado: 180.</span>
+                      </div>
+                    </div>
+
+                    <!-- Seção 6 -->
+                    <div class="wire-card">
+                      <label class="field-label">6) Observações</label>
+                      <div class="input-box" style="min-height: 42px; margin-top: 4px;">Entregar no portão lateral da chácara.</div>
+                    </div>
+                  </div>
+
+                  <!-- Coluna Direita: Resumo do Pedido -->
+                  <div class="wire-card" style="display: flex; flex-direction: column; justify-content: space-between; background: var(--bg-muted);">
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                      <h3 class="sub-title" style="border-bottom: 2px solid var(--border-wire); padding-bottom: 8px;">Resumo do Pedido</h3>
+                      <div class="text-sm"><strong>Cliente:</strong> Ludmila Carolina</div>
+                      <div class="text-sm"><strong>Evento:</strong> Chácara (Docs ok)</div>
+                      <div class="text-sm"><strong>Entrega:</strong> 14/11/2026 às 10:00</div>
+                      <div class="text-sm"><strong>Retirada:</strong> 15/11/2026 às 18:00</div>
+                      <div style="border-top: 1px solid var(--border-wire); padding-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+                        <div class="flex-between text-sm"><span>50x Mesa plástica</span><strong>R$ 500,00</strong></div>
+                        <div class="flex-between text-sm"><span>200x Cadeira plástica</span><strong>R$ 600,00</strong></div>
+                      </div>
+                    </div>
+                    <div style="border-top: 2px solid var(--border-strong); padding-top: 12px;">
+                      <div class="flex-between">
+                        <span style="font-weight: 700;">Total Estimado</span>
+                        <strong style="font-size: 22px; color: var(--accent);">R$ 1.100,00</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Rodapé Fixo -->
+                <div style="background: var(--bg-surface); border-top: 2px solid var(--border-strong); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                  <div style="font-size: 20px; font-weight: 800;">Total: R$ 1.100,00</div>
+                  <div class="flex-row">
+                    <span class="field-label">Pagamento:</span>
+                    <button type="button" class="btn" style="min-height: 44px;">Agora</button>
+                    <button type="button" class="btn" style="min-height: 44px; background: var(--warn-bg); border-color: var(--warn-text); color: var(--warn-text);">Pendente ✓</button>
+                  </div>
+                  <button type="button" class="btn btn-primary">Salvar pedido</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE 390x844 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Mobile (390 × 844)</span>
+            <span>Coluna única + Rodapé fixo</span>
+          </div>
+          <div class="mobile-frame">
+            <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+            <div class="app-topbar">
+              <div class="brand-box"><span style="font-size: 17px;">‹ Novo pedido</span></div>
+              <span class="badge badge-blue">Locação</span>
+            </div>
+
+            <div class="mobile-main">
+              <div class="wire-card">
+                <div class="field-label">1) Cliente</div>
+                <div class="input-box" style="margin-top: 4px; font-size: 14px;">Ludmila Carolina • (19) 99999-1234</div>
+              </div>
+
+              <div class="wire-card" style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="field-label">2) Tipo de evento</div>
+                <div class="grid-2">
+                  <button type="button" class="btn" style="font-size: 14px;">Residencial</button>
+                  <button type="button" class="btn btn-primary" style="font-size: 14px;">✓ Chácara</button>
+                </div>
+                <div style="background: var(--accent-soft); padding: 8px; border-radius: 6px; font-size: 14px; display: flex; flex-direction: column; gap: 6px;">
+                  <div><strong>RG *:</strong> 44.123.456-7 | <strong>CPF *:</strong> 345.678.912-00</div>
+                  <button type="button" class="btn" style="min-height: 40px; font-size: 14px;">📎 Comprovante de endereço</button>
+                </div>
+              </div>
+
+              <div class="wire-card">
+                <div class="field-label">3) Endereço & 4) Datas</div>
+                <div class="text-sm" style="margin-top: 4px;">Rua das Palmeiras, 450 - Chácara Primavera</div>
+                <div class="text-sm" style="margin-top: 4px;">Ent: 14/11 10:00 • Ret: 15/11 18:00</div>
+              </div>
+
+              <div class="wire-card" style="display: flex; flex-direction: column; gap: 6px;">
+                <div class="flex-between">
+                  <span class="field-label">5) Itens</span>
+                  <span style="color: var(--accent); font-weight: 700; font-size: 14px;">+ Adicionar item</span>
+                </div>
+                <div class="text-sm">• 50x Mesa plástica (R$ 10,00)</div>
+                <div class="text-sm">• 200x Cadeira plástica (R$ 3,00)</div>
+                <div class="alert-box alert-warn" style="padding: 8px; font-size: 13px;">
+                  ⚠ Disponível no período: 150 conjuntos de mesas. Solicitado: 180.
+                </div>
+              </div>
+
+              <div class="wire-card">
+                <div class="field-label">6) Observações</div>
+                <div class="text-sm">Entregar no portão lateral.</div>
+              </div>
+            </div>
+
+            <div style="background: var(--bg-surface); border-top: 2px solid var(--border-strong); padding: 10px 14px; display: flex; flex-direction: column; gap: 8px;">
+              <div class="flex-between">
+                <strong>Total: R$ 1.100,00</strong>
+                <span class="badge badge-warn">Pag: Pendente</span>
+              </div>
+              <button type="button" class="btn btn-primary btn-block">Salvar pedido</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC04, UC05, UC07 | Requisitos: RF04, RF05, RF07</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+    <!-- ========================================================================
+         SLIDE 5 — FIG. 6: DETALHE DO PEDIDO (UC08, UC09, UC06)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-fig6">
+      <header class="slide-header">
+        <h1 class="slide-title">Figura 6 — Tela de Detalhe do Pedido</h1>
+        <span class="slide-badge-deck">Slide 5 de 10 • Wireframe Média Fidelidade</span>
+      </header>
+
+      <div class="viewports-stage">
+        <!-- DESKTOP 1280x720 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Desktop (1280 × 720)</span>
+            <span>Alerta financeiro + Linha do tempo + Ações</span>
+          </div>
+          <div class="desktop-frame">
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon">LM</span><span>Lok Mesas</span></div>
+              <div class="user-info">
+                <span>Carlos Silva</span>
+                <span class="role-badge role-label-target">Gestor</span>
+              </div>
+            </div>
+            <div class="desktop-body">
+              <aside class="desktop-sidebar">
+                <div class="nav-item active"><span>▣</span><span>Pedidos</span></div>
+                <div class="nav-item"><span>☺</span><span>Clientes</span></div>
+                <div class="nav-item"><span>⊞</span><span>Vendas (PDV)</span></div>
+                <div class="nav-item gestor-only"><span>◫</span><span>Estoque</span></div>
+                <div class="nav-item gestor-only"><span>▤</span><span>Relatórios</span></div>
+              </aside>
+
+              <div class="desktop-main">
+                <!-- Faixa vermelha obrigatória -->
+                <div class="alert-box alert-err flex-between">
+                  <span>⚠ Pagamento pendente: R$ 450,00</span>
+                  <span style="font-size: 14px;">(Total R$ 1.100,00 • Pago R$ 650,00)</span>
+                </div>
+
+                <!-- Cabeçalho do pedido -->
+                <div class="wire-card flex-between">
+                  <div>
+                    <div class="flex-row">
+                      <h2 class="section-title">Pedido #1042</h2>
+                      <span class="badge badge-err">Pendente</span>
+                      <span class="badge badge-ok">📅 Agenda sincronizada</span>
+                    </div>
+                    <div class="text-sm" style="margin-top: 4px; font-size: 16px;">
+                      <strong>Ludmila Carolina</strong> • Tel: <strong>(19) 99999-1234</strong>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-primary">✓ Marcar como Entregue</button>
+                </div>
+
+                <!-- Linha do tempo horizontal -->
+                <div class="timeline-box">
+                  <div class="tl-step done">
+                    <span class="tl-dot">✓</span>
+                    <div>
+                      <div>Confirmado</div>
+                      <div style="font-size: 13px; color: var(--text-sec); font-weight: 500;">11/11 às 09:30</div>
+                    </div>
+                  </div>
+                  <div class="tl-line done"></div>
+                  <div class="tl-step current">
+                    <span class="tl-dot">2</span>
+                    <div>
+                      <div style="color: var(--accent);">Entregue (Atual)</div>
+                      <div style="font-size: 13px; color: var(--text-sec); font-weight: 500;">Previsto: 14/11 10:00</div>
+                    </div>
+                  </div>
+                  <div class="tl-line"></div>
+                  <div class="tl-step">
+                    <span class="tl-dot">3</span>
+                    <div>
+                      <div>Retirado</div>
+                      <div style="font-size: 13px; color: var(--text-sec); font-weight: 500;">Previsto: 15/11 18:00</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bloco de dados e itens -->
+                <div class="grid-2" style="flex: 1;">
+                  <div class="wire-card" style="display: flex; flex-direction: column; gap: 8px;">
+                    <h3 class="sub-title">Dados da Locação</h3>
+                    <div class="text-sm"><strong>Tipo:</strong> Chácara</div>
+                    <div class="text-sm"><strong>Endereço:</strong> Rua das Palmeiras, 450 - Chácara Primavera</div>
+                    <div class="text-sm"><strong>Entrega:</strong> 14/11/2026 às 10:00</div>
+                    <div class="text-sm"><strong>Retirada:</strong> 15/11/2026 às 18:00</div>
+                    <div class="text-sm"><strong>Observações:</strong> Entregar no portão lateral da chácara.</div>
+                  </div>
+
+                  <div class="wire-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                      <h3 class="sub-title" style="margin-bottom: 8px;">Itens do Pedido</h3>
+                      <div class="flex-between text-sm" style="padding: 6px 0; border-bottom: 1px solid var(--border-wire);">
+                        <span>50x Mesa plástica</span><strong>R$ 500,00</strong>
+                      </div>
+                      <div class="flex-between text-sm" style="padding: 6px 0; border-bottom: 1px solid var(--border-wire);">
+                        <span>200x Cadeira plástica</span><strong>R$ 600,00</strong>
+                      </div>
+                    </div>
+                    <div class="flex-between" style="padding-top: 8px;">
+                      <strong>Valor Total</strong>
+                      <strong style="font-size: 20px;">R$ 1.100,00</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Botões de ação grandes -->
+                <div class="grid-3">
+                  <button type="button" class="btn">🖨 Imprimir ficha A4</button>
+                  <button type="button" class="btn btn-primary">R$ Registrar pagamento</button>
+                  <button type="button" class="btn">✎ Editar pedido</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE 390x844 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Mobile (390 × 844)</span>
+            <span>Ações empilhadas</span>
+          </div>
+          <div class="mobile-frame">
+            <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+            <div class="app-topbar">
+              <div class="brand-box"><span style="font-size: 17px;">‹ Pedido #1042</span></div>
+              <span class="badge badge-err">Pendente</span>
+            </div>
+
+            <div class="mobile-main">
+              <div class="alert-box alert-err" style="font-size: 14px; padding: 10px;">
+                ⚠ Pagamento pendente: R$ 450,00
+              </div>
+
+              <div class="wire-card" style="display: flex; flex-direction: column; gap: 6px;">
+                <strong style="font-size: 17px;">Ludmila Carolina</strong>
+                <div class="text-sm">Tel: (19) 99999-1234</div>
+                <div><span class="badge badge-ok">📅 Agenda sincronizada</span></div>
+              </div>
+
+              <div class="wire-card" style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="text-sm"><strong>Status:</strong> Confirmado (11/11) → <strong style="color: var(--accent);">Entregue</strong> → Retirado</div>
+                <button type="button" class="btn btn-primary btn-block">✓ Marcar como Entregue</button>
+              </div>
+
+              <div class="wire-card" style="display: flex; flex-direction: column; gap: 6px;">
+                <strong>Itens e Endereço</strong>
+                <div class="text-sm">50 mesas plásticas • 200 cadeiras</div>
+                <div class="text-sm">Total: <strong>R$ 1.100,00</strong></div>
+                <div class="text-sm">Rua das Palmeiras, 450 - Chácara Primavera</div>
+                <div class="text-sm">Obs: Entregar no portão lateral.</div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" class="btn btn-primary btn-block">R$ Registrar pagamento</button>
+                <div class="grid-2">
+                  <button type="button" class="btn" style="font-size: 14px;">🖨 Ficha A4</button>
+                  <button type="button" class="btn" style="font-size: 14px;">✎ Editar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC08, UC09, UC06 | Requisitos: RF06, RF08, RF09</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+    <!-- ========================================================================
+         SLIDE 6 — FIG. 7: REGISTRAR PAGAMENTO (UC10)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-fig7">
+      <header class="slide-header">
+        <h1 class="slide-title">Figura 7 — Tela de Registrar Pagamento</h1>
+        <span class="slide-badge-deck">Slide 6 de 10 • Wireframe Média Fidelidade</span>
+      </header>
+
+      <div class="viewports-stage">
+        <!-- DESKTOP 1280x720 (MODAL SOBREPOSTO) -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Desktop (1280 × 720)</span>
+            <span>Modal sobreposto ao detalhe do pedido</span>
+          </div>
+          <div class="desktop-frame">
+            <div class="app-topbar" style="opacity: 0.45;">
+              <div class="brand-box"><span class="brand-icon">LM</span><span>Lok Mesas</span></div>
+              <div class="user-info"><span>Carlos Silva</span><span class="role-badge role-label-target">Gestor</span></div>
+            </div>
+            <!-- Overlay escuro simulando modal -->
+            <div style="flex: 1; background: rgba(17, 24, 39, 0.55); display: flex; align-items: center; justify-content: center; padding: 16px;">
+              <div class="wire-card" style="width: 720px; padding: 22px 26px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                <div class="flex-between" style="border-bottom: 2px solid var(--border-wire); padding-bottom: 10px;">
+                  <h2 class="section-title">Registrar pagamento — Pedido #1042</h2>
+                  <button type="button" class="btn" style="min-height: 40px; padding: 4px 12px;">✕ Fechar</button>
+                </div>
+
+                <!-- Resumo 3 blocos -->
+                <div class="grid-3">
+                  <div style="background: var(--bg-app); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-wire);">
+                    <div class="text-sm">Total do pedido</div>
+                    <strong style="font-size: 19px;">R$ 1.100,00</strong>
+                  </div>
+                  <div style="background: var(--ok-bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--ok-border);">
+                    <div class="text-sm" style="color: var(--ok-text);">Já pago</div>
+                    <strong style="font-size: 19px; color: var(--ok-text);">R$ 650,00</strong>
+                  </div>
+                  <div style="background: var(--err-bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--err-border);">
+                    <div class="text-sm" style="color: var(--err-text);">Saldo devedor</div>
+                    <strong style="font-size: 19px; color: var(--err-text);">R$ 450,00</strong>
+                  </div>
+                </div>
+
+                <!-- Formas de pagamento -->
+                <div class="field-group">
+                  <span class="field-label">Forma de pagamento</span>
+                  <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
+                    <button type="button" class="btn" style="font-size: 15px; padding: 8px;">Dinheiro</button>
+                    <button type="button" class="btn" style="font-size: 15px; padding: 8px;">Débito</button>
+                    <button type="button" class="btn btn-primary" style="font-size: 15px; padding: 8px;">✓ Crédito</button>
+                    <button type="button" class="btn" style="font-size: 15px; padding: 8px; border-color: var(--accent); flex-direction: column; gap: 2px; line-height: 1.1;">
+                      <span>PIX</span>
+                      <span style="font-size: 11px; color: var(--accent);">Recomendado</span>
+                    </button>
+                    <button type="button" class="btn" style="font-size: 15px; padding: 8px;">Vale</button>
+                  </div>
+                </div>
+
+                <!-- Valor recebido + Parcelas -->
+                <div class="grid-2">
+                  <div class="field-group">
+                    <label class="field-label">Valor recebido (R$)</label>
+                    <div class="input-box error">
+                      <strong>500,00</strong>
+                      <span style="color: var(--err-text); font-weight: 800;">!</span>
+                    </div>
+                    <div style="color: var(--err-text); font-size: 14px; font-weight: 700;">
+                      ✕ Valor maior que o saldo devedor
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Parcelas (Crédito)</label>
+                    <div class="input-box">
+                      <span>2x sem juros (R$ 225,00)</span>
+                      <span>▼</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-block">Confirmar pagamento</button>
+
+                <!-- Histórico de pagamentos -->
+                <div style="border-top: 1px solid var(--border-wire); padding-top: 10px;">
+                  <div class="field-label" style="margin-bottom: 6px;">Histórico de pagamentos</div>
+                  <div style="background: var(--bg-app); border: 1px solid var(--border-wire); border-radius: 6px; padding: 8px 12px; font-size: 14px;">
+                    11/11/2026 09:35 • <strong>PIX</strong> • <strong style="color: var(--ok-text);">R$ 650,00</strong> • Reg. por: Carlos Silva
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE 390x844 (TELA CHEIA) -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Mobile (390 × 844)</span>
+            <span>Tela cheia</span>
+          </div>
+          <div class="mobile-frame">
+            <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+            <div class="app-topbar">
+              <div class="brand-box"><span style="font-size: 16px;">‹ Registrar pagamento</span></div>
+              <span class="badge badge-neutral">#1042</span>
+            </div>
+
+            <div class="mobile-main">
+              <div class="grid-3" style="gap: 6px;">
+                <div style="background: var(--bg-surface); border: 1px solid var(--border-wire); padding: 8px; border-radius: 6px;">
+                  <div style="font-size: 12px; color: var(--text-sec);">Total</div>
+                  <strong style="font-size: 14px;">R$ 1.100</strong>
+                </div>
+                <div style="background: var(--ok-bg); padding: 8px; border-radius: 6px;">
+                  <div style="font-size: 12px; color: var(--ok-text);">Pago</div>
+                  <strong style="font-size: 14px; color: var(--ok-text);">R$ 650</strong>
+                </div>
+                <div style="background: var(--err-bg); padding: 8px; border-radius: 6px;">
+                  <div style="font-size: 12px; color: var(--err-text);">Saldo</div>
+                  <strong style="font-size: 14px; color: var(--err-text);">R$ 450</strong>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <span class="field-label">Forma de pagamento</span>
+                <div class="grid-2" style="gap: 8px;">
+                  <button type="button" class="btn" style="font-size: 15px;">Dinheiro</button>
+                  <button type="button" class="btn" style="font-size: 15px;">Débito</button>
+                  <button type="button" class="btn btn-primary" style="font-size: 15px;">✓ Crédito</button>
+                  <button type="button" class="btn" style="font-size: 15px; border-color: var(--accent);">PIX ★</button>
+                  <button type="button" class="btn" style="font-size: 15px; grid-column: span 2;">Vale</button>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Valor recebido (R$)</label>
+                <div class="input-box error"><strong>500,00</strong></div>
+                <div style="color: var(--err-text); font-size: 14px; font-weight: 700;">✕ Valor maior que o saldo devedor</div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Parcelas</label>
+                <div class="input-box"><span>2x sem juros</span><span>▼</span></div>
+              </div>
+
+              <button type="button" class="btn btn-primary btn-block">Confirmar pagamento</button>
+
+              <div class="wire-card" style="padding: 10px;">
+                <strong style="font-size: 14px;">Histórico de pagamentos</strong>
+                <div class="text-sm" style="font-size: 13px; margin-top: 4px;">
+                  11/11/2026 09:35 • PIX • R$ 650,00 • Carlos Silva
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC10 | Requisitos: RF10</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+    <!-- ========================================================================
+         SLIDE 7 — FIG. 8: PDV, VENDA DE BALCÃO (UC11, UC13)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-fig8">
+      <header class="slide-header">
+        <h1 class="slide-title">Figura 8 — Tela de PDV (Venda de Balcão)</h1>
+        <span class="slide-badge-deck">Slide 7 de 10 • Wireframe Média Fidelidade</span>
+      </header>
+
+      <div class="viewports-stage">
+        <!-- DESKTOP 1280x720 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Desktop (1280 × 720)</span>
+            <span>Catálogo à esquerda + Carrinho à direita</span>
+          </div>
+          <div class="desktop-frame">
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon">LM</span><span>Lok Mesas</span></div>
+              <div class="user-info">
+                <span>Carlos Silva</span>
+                <span class="role-badge role-label-target">Gestor</span>
+              </div>
+            </div>
+            <div class="desktop-body">
+              <aside class="desktop-sidebar">
+                <div class="nav-item"><span>▣</span><span>Pedidos</span></div>
+                <div class="nav-item"><span>☺</span><span>Clientes</span></div>
+                <div class="nav-item active"><span>⊞</span><span>Vendas (PDV)</span></div>
+                <div class="nav-item gestor-only"><span>◫</span><span>Estoque</span></div>
+                <div class="nav-item gestor-only"><span>▤</span><span>Relatórios</span></div>
+              </aside>
+
+              <div class="desktop-main" style="display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 18px;">
+                <!-- Esquerda: Busca e Grade de Produtos -->
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                  <div class="input-box">
+                    <span class="input-placeholder">🔍 Buscar produto ou ler código</span>
+                    <span class="badge badge-neutral">F2</span>
+                  </div>
+
+                  <div class="grid-2" style="gap: 10px;">
+                    <div class="wire-card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 6px;">
+                      <strong style="font-size: 16px;">Água 20 L</strong>
+                      <div style="font-size: 18px; font-weight: 800; color: var(--accent);">R$ 14,00</div>
+                      <div class="text-sm">Estoque: 42 un.</div>
+                    </div>
+
+                    <div class="wire-card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 6px;">
+                      <strong style="font-size: 16px;">Fardo de água 12x500ml</strong>
+                      <div style="font-size: 18px; font-weight: 800; color: var(--accent);">R$ 12,00</div>
+                      <div class="text-sm">Estoque: 30 un.</div>
+                    </div>
+
+                    <div class="wire-card row-danger" style="display: flex; flex-direction: column; justify-content: space-between; gap: 6px;">
+                      <div class="flex-between">
+                        <strong style="font-size: 16px;">Gelo 5 kg</strong>
+                        <span class="badge badge-err">Estoque baixo</span>
+                      </div>
+                      <div style="font-size: 18px; font-weight: 800; color: var(--accent);">R$ 15,00</div>
+                      <div class="text-sm" style="color: var(--err-text); font-weight: 700;">Estoque: 4 un.</div>
+                    </div>
+
+                    <div class="wire-card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 6px;">
+                      <strong style="font-size: 16px;">Carvão 5 kg</strong>
+                      <div style="font-size: 18px; font-weight: 800; color: var(--accent);">R$ 22,00</div>
+                      <div class="text-sm">Estoque: 18 un.</div>
+                    </div>
+
+                    <div class="wire-card selected" style="grid-column: span 2; display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        <strong style="font-size: 16px;">Refrigerante Lata 350ml</strong>
+                        <div class="text-sm">Varejo: R$ 4,50 | Atacado (12+): <strong>R$ 3,20</strong></div>
+                      </div>
+                      <div class="text-sm">Estoque: 120 un.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Direita: Carrinho -->
+                <div class="wire-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                  <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="flex-between" style="border-bottom: 2px solid var(--border-wire); padding-bottom: 8px;">
+                      <h3 class="sub-title">Carrinho (Venda Balcão)</h3>
+                      <span class="badge badge-neutral">3 itens</span>
+                    </div>
+
+                    <!-- Item com atacado aplicado -->
+                    <div style="background: var(--bg-app); padding: 10px; border-radius: 8px; border: 1px solid var(--border-wire);">
+                      <div class="flex-between">
+                        <strong>Refrigerante Lata 350ml</strong>
+                        <strong>R$ 76,80</strong>
+                      </div>
+                      <div style="margin: 4px 0;">
+                        <span class="badge badge-ok">✓ Preço atacado aplicado (R$ 3,20/un)</span>
+                      </div>
+                      <div class="flex-between" style="margin-top: 6px;">
+                        <div class="flex-row">
+                          <button type="button" class="btn btn-sm-square">−</button>
+                          <strong style="font-size: 18px; padding: 0 8px;">24</strong>
+                          <button type="button" class="btn btn-sm-square">+</button>
+                        </div>
+                        <span class="text-sm">24 × R$ 3,20</span>
+                      </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div style="background: var(--bg-app); padding: 10px; border-radius: 8px; border: 1px solid var(--border-wire);">
+                      <div class="flex-between">
+                        <strong>Carvão 5 kg</strong>
+                        <strong>R$ 44,00</strong>
+                      </div>
+                      <div class="flex-between" style="margin-top: 6px;">
+                        <div class="flex-row">
+                          <button type="button" class="btn btn-sm-square">−</button>
+                          <strong style="font-size: 18px; padding: 0 8px;">2</strong>
+                          <button type="button" class="btn btn-sm-square">+</button>
+                        </div>
+                        <span class="text-sm">2 × R$ 22,00</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="border-top: 2px solid var(--border-strong); padding-top: 12px; display: flex; flex-direction: column; gap: 10px;">
+                    <div class="flex-between text-sm"><span>Subtotal</span><span>R$ 120,80</span></div>
+                    <div class="flex-between"><strong style="font-size: 18px;">Total a pagar</strong><strong style="font-size: 24px; color: var(--accent);">R$ 120,80</strong></div>
+                    <button type="button" class="btn btn-primary btn-block">Receber pagamento</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE 390x844 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Mobile (390 × 844)</span>
+            <span>Abas Produtos / Carrinho</span>
+          </div>
+          <div class="mobile-frame">
+            <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon" style="width: 30px; height: 30px; font-size: 14px;">LM</span><span style="font-size: 17px;">PDV Balcão</span></div>
+              <span class="role-badge role-label-target" style="font-size: 12px;">Gestor</span>
+            </div>
+
+            <div class="mobile-main">
+              <div class="grid-2">
+                <button type="button" class="tab-btn" style="font-size: 15px;">Produtos (5)</button>
+                <button type="button" class="tab-btn active" style="font-size: 15px;">Carrinho (3)</button>
+              </div>
+
+              <div class="wire-card" style="display: flex; flex-direction: column; gap: 6px;">
+                <div class="flex-between">
+                  <strong>Refrigerante Lata 350ml</strong>
+                  <strong>R$ 76,80</strong>
+                </div>
+                <div><span class="badge badge-ok" style="font-size: 12px;">✓ Preço atacado aplicado</span></div>
+                <div class="flex-between" style="margin-top: 4px;">
+                  <div class="flex-row">
+                    <button type="button" class="btn btn-sm-square">−</button>
+                    <strong>24</strong>
+                    <button type="button" class="btn btn-sm-square">+</button>
+                  </div>
+                  <span class="text-sm">R$ 3,20/un</span>
+                </div>
+              </div>
+
+              <div class="wire-card" style="display: flex; flex-direction: column; gap: 6px;">
+                <div class="flex-between">
+                  <strong>Carvão 5 kg</strong>
+                  <strong>R$ 44,00</strong>
+                </div>
+                <div class="flex-between" style="margin-top: 4px;">
+                  <div class="flex-row">
+                    <button type="button" class="btn btn-sm-square">−</button>
+                    <strong>2</strong>
+                    <button type="button" class="btn btn-sm-square">+</button>
+                  </div>
+                  <span class="text-sm">R$ 22,00/un</span>
+                </div>
+              </div>
+
+              <div class="wire-card row-danger" style="padding: 10px;">
+                <div class="flex-between">
+                  <span style="font-size: 14px; font-weight: 700;">Alerta: Gelo 5 kg (4 un.)</span>
+                  <span class="badge badge-err" style="font-size: 12px;">Estoque baixo</span>
+                </div>
+              </div>
+
+              <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+                <div class="flex-between">
+                  <strong>Total</strong>
+                  <strong style="font-size: 22px; color: var(--accent);">R$ 120,80</strong>
+                </div>
+                <button type="button" class="btn btn-primary btn-block">Receber pagamento</button>
+              </div>
+            </div>
+
+            <nav class="mobile-bottom-nav">
+              <button type="button" class="mobile-nav-btn"><span>▣</span><span>Pedidos</span></button>
+              <button type="button" class="mobile-nav-btn"><span>☺</span><span>Clientes</span></button>
+              <button type="button" class="mobile-nav-btn active"><span>⊞</span><span>Vendas</span></button>
+              <button type="button" class="mobile-nav-btn gestor-only"><span>◫</span><span>Estoque</span></button>
+              <button type="button" class="mobile-nav-btn gestor-only"><span>▤</span><span>Relatórios</span></button>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC11, UC13 | Requisitos: RF11, RF13</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+    <!-- ========================================================================
+         SLIDE 8 — FIG. 9: PRODUTOS E ESTOQUE, PERFIL GESTOR (UC14)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-fig9">
+      <header class="slide-header">
+        <h1 class="slide-title">Figura 9 — Tela de Produtos e Estoque (Perfil Gestor)</h1>
+        <span class="slide-badge-deck">Slide 8 de 10 • Wireframe Média Fidelidade</span>
+      </header>
+
+      <div class="viewports-stage">
+        <!-- DESKTOP 1280x720 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Desktop (1280 × 720)</span>
+            <span>Tabela + Linha crítica + Painel de edição lateral</span>
+          </div>
+          <div class="desktop-frame">
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon">LM</span><span>Lok Mesas</span></div>
+              <div class="user-info">
+                <span>Carlos Silva</span>
+                <span class="role-badge">Gestor</span>
+              </div>
+            </div>
+            <div class="desktop-body">
+              <aside class="desktop-sidebar">
+                <div class="nav-item"><span>▣</span><span>Pedidos</span></div>
+                <div class="nav-item"><span>☺</span><span>Clientes</span></div>
+                <div class="nav-item"><span>⊞</span><span>Vendas (PDV)</span></div>
+                <div class="nav-item active"><span>◫</span><span>Estoque</span></div>
+                <div class="nav-item"><span>▤</span><span>Relatórios</span></div>
+              </aside>
+
+              <div class="desktop-main">
+                <div class="flex-between">
+                  <h2 class="section-title">Produtos e estoque (Perfil: Gestor)</h2>
+                  <div class="flex-row">
+                    <label class="chip" style="cursor: pointer;">
+                      <span>☐ Mostrar apenas estoque baixo</span>
+                    </label>
+                    <button type="button" class="btn btn-primary">+ Novo produto</button>
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1.55fr 0.85fr; gap: 16px; flex: 1;">
+                  <!-- Tabela Desktop -->
+                  <div>
+                    <table class="wire-table">
+                      <thead>
+                        <tr>
+                          <th>Produto</th>
+                          <th>Unid.</th>
+                          <th>Varejo</th>
+                          <th>Atacado</th>
+                          <th>Atual</th>
+                          <th>Mín.</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="tr-err">
+                          <td><strong>Gelo 5 kg</strong></td>
+                          <td>Pacote</td>
+                          <td>R$ 15,00</td>
+                          <td>R$ 12,50</td>
+                          <td><strong style="color: var(--err-text);">4</strong></td>
+                          <td>15</td>
+                          <td><span class="badge badge-err">Abaixo do mínimo</span></td>
+                        </tr>
+                        <tr>
+                          <td><strong>Água 20 L</strong></td>
+                          <td>Galão</td>
+                          <td>R$ 14,00</td>
+                          <td>R$ 11,50</td>
+                          <td>42</td>
+                          <td>20</td>
+                          <td><span class="badge badge-ok">Ok</span></td>
+                        </tr>
+                        <tr>
+                          <td><strong>Fardo água 12x500ml</strong></td>
+                          <td>Caixa</td>
+                          <td>R$ 12,00</td>
+                          <td>R$ 9,80</td>
+                          <td>30</td>
+                          <td>15</td>
+                          <td><span class="badge badge-ok">Ok</span></td>
+                        </tr>
+                        <tr>
+                          <td><strong>Carvão 5 kg</strong></td>
+                          <td>Saco</td>
+                          <td>R$ 22,00</td>
+                          <td>R$ 18,50</td>
+                          <td>18</td>
+                          <td>10</td>
+                          <td><span class="badge badge-ok">Ok</span></td>
+                        </tr>
+                        <tr>
+                          <td><strong>Refrigerante 350ml</strong></td>
+                          <td>Unidade</td>
+                          <td>R$ 4,50</td>
+                          <td>R$ 3,20</td>
+                          <td>120</td>
+                          <td>48</td>
+                          <td><span class="badge badge-ok">Ok</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Painel Lateral de Edição -->
+                  <div class="wire-card" style="display: flex; flex-direction: column; justify-content: space-between; border-color: var(--accent);">
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                      <div class="flex-between" style="border-bottom: 1px solid var(--border-wire); padding-bottom: 8px;">
+                        <h3 class="sub-title">Editar Produto</h3>
+                        <span class="badge badge-err">Crítico</span>
+                      </div>
+
+                      <div class="field-group">
+                        <label class="field-label" style="font-size: 14px;">Nome do produto</label>
+                        <div class="input-box" style="min-height: 42px;">Gelo 5 kg</div>
+                      </div>
+
+                      <div class="grid-2">
+                        <div class="field-group">
+                          <label class="field-label" style="font-size: 14px;">Unidade</label>
+                          <div class="input-box" style="min-height: 42px;">Pacote</div>
+                        </div>
+                        <div class="field-group">
+                          <label class="field-label" style="font-size: 14px;">Estoque atual</label>
+                          <div class="input-box error" style="min-height: 42px;"><strong>4</strong></div>
+                        </div>
+                      </div>
+
+                      <div class="grid-2">
+                        <div class="field-group">
+                          <label class="field-label" style="font-size: 14px;">Preço Varejo</label>
+                          <div class="input-box" style="min-height: 42px;">R$ 15,00</div>
+                        </div>
+                        <div class="field-group">
+                          <label class="field-label" style="font-size: 14px;">Preço Atacado</label>
+                          <div class="input-box" style="min-height: 42px;">R$ 12,50</div>
+                        </div>
+                      </div>
+
+                      <div class="field-group">
+                        <label class="field-label" style="font-size: 14px;">Estoque mínimo</label>
+                        <div class="input-box" style="min-height: 42px;">15</div>
+                      </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-block">Salvar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE 390x844 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Mobile (390 × 844)</span>
+            <span>Cards empilhados + Card de edição</span>
+          </div>
+          <div class="mobile-frame">
+            <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+            <div class="app-topbar">
+              <div class="brand-box"><span style="font-size: 16px;">Produtos e Estoque</span></div>
+              <button type="button" class="btn btn-primary" style="min-height: 40px; padding: 6px 10px; font-size: 14px;">+ Novo</button>
+            </div>
+
+            <div class="mobile-main">
+              <div class="chip" style="width: 100%; justify-content: center;">☐ Mostrar apenas estoque baixo</div>
+
+              <div class="wire-card row-danger">
+                <div class="flex-between">
+                  <strong>Gelo 5 kg (Pacote)</strong>
+                  <span class="badge badge-err">Abaixo do mínimo</span>
+                </div>
+                <div class="text-sm" style="margin-top: 4px;">Varejo: R$ 15,00 | Atacado: R$ 12,50</div>
+                <div class="text-sm">Estoque: <strong style="color: var(--err-text);">4</strong> / Mín: 15</div>
+              </div>
+
+              <div class="wire-card">
+                <div class="flex-between">
+                  <strong>Água 20 L (Galão)</strong>
+                  <span class="badge badge-ok">Ok</span>
+                </div>
+                <div class="text-sm" style="margin-top: 4px;">Varejo: R$ 14,00 | Atacado: R$ 11,50</div>
+                <div class="text-sm">Estoque: <strong>42</strong> / Mín: 20</div>
+              </div>
+
+              <!-- Card de Edição Mobile -->
+              <div class="wire-card" style="border-color: var(--accent); display: flex; flex-direction: column; gap: 8px;">
+                <strong>Edição rápida: Gelo 5 kg</strong>
+                <div class="grid-2">
+                  <div class="input-box" style="min-height: 42px; font-size: 14px;">Atual: 4</div>
+                  <div class="input-box" style="min-height: 42px; font-size: 14px;">Mín: 15</div>
+                </div>
+                <button type="button" class="btn btn-primary btn-block">Salvar</button>
+              </div>
+            </div>
+
+            <nav class="mobile-bottom-nav">
+              <button type="button" class="mobile-nav-btn"><span>▣</span><span>Pedidos</span></button>
+              <button type="button" class="mobile-nav-btn"><span>☺</span><span>Clientes</span></button>
+              <button type="button" class="mobile-nav-btn"><span>⊞</span><span>Vendas</span></button>
+              <button type="button" class="mobile-nav-btn active"><span>◫</span><span>Estoque</span></button>
+              <button type="button" class="mobile-nav-btn"><span>▤</span><span>Relatórios</span></button>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC14 | Requisitos: RF14</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+    <!-- ========================================================================
+         SLIDE 9 — FIG. 10: RELATÓRIO DE FATURAMENTO, PERFIL GESTOR (UC15)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-fig10">
+      <header class="slide-header">
+        <h1 class="slide-title">Figura 10 — Tela de Relatório de Faturamento (Perfil Gestor)</h1>
+        <span class="slide-badge-deck">Slide 9 de 10 • Wireframe Média Fidelidade</span>
+      </header>
+
+      <div class="viewports-stage">
+        <!-- DESKTOP 1280x720 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Desktop (1280 × 720)</span>
+            <span>KPIs + Gráfico de barras CSS + Tabela por forma de pagamento</span>
+          </div>
+          <div class="desktop-frame">
+            <div class="app-topbar">
+              <div class="brand-box"><span class="brand-icon">LM</span><span>Lok Mesas</span></div>
+              <div class="user-info">
+                <span>Carlos Silva</span>
+                <span class="role-badge">Gestor</span>
+              </div>
+            </div>
+            <div class="desktop-body">
+              <aside class="desktop-sidebar">
+                <div class="nav-item"><span>▣</span><span>Pedidos</span></div>
+                <div class="nav-item"><span>☺</span><span>Clientes</span></div>
+                <div class="nav-item"><span>⊞</span><span>Vendas (PDV)</span></div>
+                <div class="nav-item"><span>◫</span><span>Estoque</span></div>
+                <div class="nav-item active"><span>▤</span><span>Relatórios</span></div>
+              </aside>
+
+              <div class="desktop-main">
+                <div class="flex-between">
+                  <h2 class="section-title">Relatório de faturamento (Perfil: Gestor)</h2>
+                  <div class="flex-row">
+                    <button type="button" class="btn">📄 Exportar PDF</button>
+                    <button type="button" class="btn">📊 Exportar planilha</button>
+                  </div>
+                </div>
+
+                <!-- Seletor de Período -->
+                <div class="flex-row">
+                  <button type="button" class="tab-btn">Dia</button>
+                  <button type="button" class="tab-btn active">Semana</button>
+                  <button type="button" class="tab-btn">Mês</button>
+                  <button type="button" class="tab-btn">Personalizado</button>
+                </div>
+
+                <!-- 3 Cards de Totais -->
+                <div class="grid-3">
+                  <div class="wire-card" style="border-left: 6px solid var(--accent);">
+                    <div class="text-sm">Total geral</div>
+                    <strong style="font-size: 24px; color: var(--accent);">R$ 14.850,00</strong>
+                  </div>
+                  <div class="wire-card">
+                    <div class="text-sm">Locação</div>
+                    <strong style="font-size: 24px;">R$ 10.200,00</strong>
+                  </div>
+                  <div class="wire-card">
+                    <div class="text-sm">Comércio (PDV)</div>
+                    <strong style="font-size: 24px;">R$ 4.650,00</strong>
+                  </div>
+                </div>
+
+                <!-- Gráfico de Barras + Tabela Pagamento -->
+                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; flex: 1;">
+                  <div class="wire-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <h3 class="sub-title">Faturamento por dia (Seg a Dom)</h3>
+                    <div class="bar-chart-wrap">
+                      <div class="bar-col">
+                        <span class="bar-val">1.2k</span>
+                        <div class="bar-fill" style="height: 36%;"></div>
+                        <span class="bar-day">Seg</span>
+                      </div>
+                      <div class="bar-col">
+                        <span class="bar-val">1.5k</span>
+                        <div class="bar-fill" style="height: 45%;"></div>
+                        <span class="bar-day">Ter</span>
+                      </div>
+                      <div class="bar-col">
+                        <span class="bar-val">1.8k</span>
+                        <div class="bar-fill" style="height: 54%;"></div>
+                        <span class="bar-day">Qua</span>
+                      </div>
+                      <div class="bar-col">
+                        <span class="bar-val">2.1k</span>
+                        <div class="bar-fill" style="height: 62%;"></div>
+                        <span class="bar-day">Qui</span>
+                      </div>
+                      <div class="bar-col">
+                        <span class="bar-val">2.9k</span>
+                        <div class="bar-fill" style="height: 85%;"></div>
+                        <span class="bar-day">Sex</span>
+                      </div>
+                      <div class="bar-col">
+                        <span class="bar-val">3.4k</span>
+                        <div class="bar-fill" style="height: 100%;"></div>
+                        <span class="bar-day">Sáb</span>
+                      </div>
+                      <div class="bar-col">
+                        <span class="bar-val">1.95k</span>
+                        <div class="bar-fill" style="height: 58%;"></div>
+                        <span class="bar-day">Dom</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="wire-card" style="display: flex; flex-direction: column; gap: 8px;">
+                    <h3 class="sub-title">Por forma de pagamento</h3>
+                    <table class="wire-table" style="font-size: 14px;">
+                      <thead>
+                        <tr>
+                          <th>Forma</th>
+                          <th>Valor (R$)</th>
+                          <th>%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td><strong>PIX</strong></td><td>R$ 6.831,00</td><td>46%</td></tr>
+                        <tr><td><strong>Crédito</strong></td><td>R$ 3.564,00</td><td>24%</td></tr>
+                        <tr><td><strong>Débito</strong></td><td>R$ 2.227,50</td><td>15%</td></tr>
+                        <tr><td><strong>Dinheiro</strong></td><td>R$ 1.633,50</td><td>11%</td></tr>
+                        <tr><td><strong>Vale</strong></td><td>R$ 594,00</td><td>4%</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE 390x844 -->
+        <div class="viewport-column">
+          <div class="viewport-caption">
+            <span>Mobile (390 × 844)</span>
+            <span>Visão executiva compacta</span>
+          </div>
+          <div class="mobile-frame">
+            <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+            <div class="app-topbar">
+              <div class="brand-box"><span style="font-size: 16px;">Relatório Faturamento</span></div>
+              <span class="role-badge" style="font-size: 12px;">Gestor</span>
+            </div>
+
+            <div class="mobile-main">
+              <div class="chips-row">
+                <span class="chip">Dia</span>
+                <span class="chip active">Semana</span>
+                <span class="chip">Mês</span>
+                <span class="chip">Custom</span>
+              </div>
+
+              <div class="wire-card" style="border-left: 5px solid var(--accent);">
+                <div class="text-sm">Total geral</div>
+                <strong style="font-size: 22px; color: var(--accent);">R$ 14.850,00</strong>
+                <div class="text-sm" style="margin-top: 4px;">Locação: R$ 10.200 • PDV: R$ 4.650</div>
+              </div>
+
+              <div class="wire-card">
+                <strong style="font-size: 15px;">Faturamento por dia</strong>
+                <div class="bar-chart-wrap" style="height: 120px; padding: 16px 8px 4px 8px; gap: 6px; margin-top: 8px;">
+                  <div class="bar-col"><div class="bar-fill" style="height: 36%;"></div><span class="bar-day" style="font-size: 12px;">S</span></div>
+                  <div class="bar-col"><div class="bar-fill" style="height: 45%;"></div><span class="bar-day" style="font-size: 12px;">T</span></div>
+                  <div class="bar-col"><div class="bar-fill" style="height: 54%;"></div><span class="bar-day" style="font-size: 12px;">Q</span></div>
+                  <div class="bar-col"><div class="bar-fill" style="height: 62%;"></div><span class="bar-day" style="font-size: 12px;">Q</span></div>
+                  <div class="bar-col"><div class="bar-fill" style="height: 85%;"></div><span class="bar-day" style="font-size: 12px;">S</span></div>
+                  <div class="bar-col"><div class="bar-fill" style="height: 100%;"></div><span class="bar-day" style="font-size: 12px;">S</span></div>
+                  <div class="bar-col"><div class="bar-fill" style="height: 58%;"></div><span class="bar-day" style="font-size: 12px;">D</span></div>
+                </div>
+              </div>
+
+              <div class="wire-card" style="padding: 10px;">
+                <strong style="font-size: 15px;">Por forma de pagamento</strong>
+                <div class="text-sm" style="margin-top: 6px;">PIX: R$ 6.831,00 (46%) • Crédito: R$ 3.564,00 (24%)</div>
+                <div class="text-sm">Débito: R$ 2.227,50 (15%) • Dinheiro/Vale: 15%</div>
+              </div>
+
+              <div class="grid-2">
+                <button type="button" class="btn" style="font-size: 14px;">📄 PDF</button>
+                <button type="button" class="btn" style="font-size: 14px;">📊 Planilha</button>
+              </div>
+            </div>
+
+            <nav class="mobile-bottom-nav">
+              <button type="button" class="mobile-nav-btn"><span>▣</span><span>Pedidos</span></button>
+              <button type="button" class="mobile-nav-btn"><span>☺</span><span>Clientes</span></button>
+              <button type="button" class="mobile-nav-btn"><span>⊞</span><span>Vendas</span></button>
+              <button type="button" class="mobile-nav-btn"><span>◫</span><span>Estoque</span></button>
+              <button type="button" class="mobile-nav-btn active"><span>▤</span><span>Relatórios</span></button>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC15 | Requisitos: RF15</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+    <!-- ========================================================================
+         SLIDE 10 — EXTRA: FICHA DE ENTREGA / RETIRADA A4 (UC09)
+         ======================================================================== -->
+    <section class="slide-frame" id="slide-extra">
+      <header class="slide-header">
+        <h1 class="slide-title">Extra — Ficha de Entrega / Retirada A4 (Impressão)</h1>
+        <span class="slide-badge-deck">Slide 10 de 10 • Documento A4 Retrato Preto e Branco</span>
+      </header>
+
+      <div class="viewports-stage">
+        <div class="a4-paper">
+          <!-- Cabeçalho da Folha A4 -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px solid #000000; padding-bottom: 14px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 46px; height: 46px; border: 2.5px solid #000000; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;">
+                LM
+              </div>
+              <div>
+                <div style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">LOK MESAS</div>
+                <div style="font-size: 13px; font-weight: 600;">Locação de Mesas, Cadeiras e Artigos para Eventos</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 16px; font-weight: 800;">FICHA DE ENTREGA / RETIRADA</div>
+              <div style="font-size: 18px; font-weight: 800; border: 2px solid #000000; padding: 3px 10px; display: inline-block; margin-top: 4px;">
+                PEDIDO #1042
+              </div>
+            </div>
+          </div>
+
+          <!-- Dados do Cliente -->
+          <div class="a4-box">
+            <div class="a4-box-title">1. Dados do Cliente</div>
+            <div style="display: flex; justify-content: space-between; font-size: 15px;">
+              <span><strong>Nome:</strong> Ludmila Carolina</span>
+              <span><strong>Telefone / WhatsApp:</strong> (19) 99999-1234</span>
+            </div>
+          </div>
+
+          <!-- Endereço do Evento -->
+          <div class="a4-box">
+            <div class="a4-box-title">2. Endereço do Evento (Tipo: Chácara)</div>
+            <div style="font-size: 15px;">
+              <strong>Local:</strong> Rua das Palmeiras, 450 — Bairro: Chácara Primavera — Campinas/SP
+            </div>
+          </div>
+
+          <!-- Datas e Horários -->
+          <div class="a4-box">
+            <div class="a4-box-title">3. Datas e Horários Agendados</div>
+            <div style="display: flex; justify-content: space-between; font-size: 15px;">
+              <span><strong>Entrega:</strong> 14/11/2026 às 10:00</span>
+              <span><strong>Retirada:</strong> 15/11/2026 às 18:00</span>
+            </div>
+          </div>
+
+          <!-- Tabela de Itens -->
+          <div>
+            <table class="a4-table">
+              <thead>
+                <tr>
+                  <th style="width: 75%;">Item Locado</th>
+                  <th style="width: 25%; text-align: center;">Quantidade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mesa plástica quadrada</td>
+                  <td style="text-align: center; font-weight: 800;">50</td>
+                </tr>
+                <tr>
+                  <td>Cadeira plástica sem braço</td>
+                  <td style="text-align: center; font-weight: 800;">200</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Valor Total e Pagamento -->
+          <div class="a4-box" style="display: flex; justify-content: space-between; align-items: center; background: #F9FAFB;">
+            <div style="font-size: 15px;">
+              <strong>Status / Forma de Pagamento:</strong> Parcial (PIX R$ 650,00 pago) — <strong>Pendente: R$ 450,00</strong>
+            </div>
+            <div style="font-size: 17px; font-weight: 800;">
+              VALOR TOTAL: R$ 1.100,00
+            </div>
+          </div>
+
+          <!-- Regras de Uso -->
+          <div class="a4-box">
+            <div class="a4-box-title">4. Regras de Uso e Conservação</div>
+            <p style="font-size: 14px; line-height: 1.45;">
+              É expressamente proibido colar fitas adesivas, pregar materiais ou colocar objetos quentes diretamente sobre as mesas. Danos ou extravios serão cobrados conforme tabela vigente.
+            </p>
+          </div>
+
+          <!-- Observações Pautadas -->
+          <div class="a4-box">
+            <div class="a4-box-title">5. Observações</div>
+            <div class="ruled-line"></div>
+            <div class="ruled-line"></div>
+            <div class="ruled-line"></div>
+          </div>
+
+          <!-- Área de Assinatura -->
+          <div style="margin-top: auto; padding-top: 18px; display: flex; flex-direction: column; gap: 16px; font-size: 14px;">
+            <div>
+              <strong>Assinatura do recebedor:</strong> _______________________________________________________
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span><strong>Nome legível:</strong> ________________________________________</span>
+              <span><strong>Data:</strong> ____ / ____ / 2026</span>
+            </div>
+          </div>
+
+          <!-- Rodapé da Empresa -->
+          <div style="border-top: 1.5px solid #000000; padding-top: 10px; text-align: center; font-size: 13px; font-weight: 600;">
+            Lok Mesas • Tel / WhatsApp: (19) 3246-0000 / (19) 99900-1122 • R. Sylvia da Silva Braga, 724 — Campinas/SP
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <span>Caso de uso: UC09 | Requisitos: RF09</span>
+        <span>Lok Mesas — Protótipo de Interface</span>
+      </footer>
+    </section>
+
+  </main>
+
+  <script>
+    (function () {
+      const slideSelector = document.getElementById('slideSelector');
+      const prevBtn = document.getElementById('prevSlideBtn');
+      const nextBtn = document.getElementById('nextSlideBtn');
+      const toggleRoleBtn = document.getElementById('toggleRoleBtn');
+      const togglePrintBtn = document.getElementById('togglePrintBtn');
+      const restoreBarBtn = document.getElementById('restoreBarBtn');
+      const slides = Array.from(document.querySelectorAll('.slide-frame'));
+      const roleBadges = Array.from(document.querySelectorAll('.role-label-target'));
+
+      let isGestor = true;
+
+      function applySlideFilter(value) {
+        if (value === 'all') {
+          slides.forEach((s) => s.classList.remove('hidden-slide'));
+        } else {
+          slides.forEach((s) => {
+            if (s.id === value) {
+              s.classList.remove('hidden-slide');
+            } else {
+              s.classList.add('hidden-slide');
+            }
+          });
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      slideSelector.addEventListener('change', (e) => {
+        applySlideFilter(e.target.value);
+      });
+
+      prevBtn.addEventListener('click', () => {
+        const currentIdx = slideSelector.selectedIndex;
+        if (currentIdx > 1) {
+          slideSelector.selectedIndex = currentIdx - 1;
+        } else {
+          slideSelector.selectedIndex = slideSelector.options.length - 1;
+        }
+        applySlideFilter(slideSelector.value);
+      });
+
+      nextBtn.addEventListener('click', () => {
+        const currentIdx = slideSelector.selectedIndex;
+        if (currentIdx < slideSelector.options.length - 1) {
+          slideSelector.selectedIndex = currentIdx + 1;
+        } else {
+          slideSelector.selectedIndex = 1;
+        }
+        applySlideFilter(slideSelector.value);
+      });
+
+      toggleRoleBtn.addEventListener('click', () => {
+        isGestor = !isGestor;
+        document.body.classList.toggle('role-atendente', !isGestor);
+        const label = isGestor ? 'Gestor' : 'Atendente';
+        toggleRoleBtn.textContent = `Perfil: ${label} (Alternar)`;
+        roleBadges.forEach((badge) => {
+          badge.textContent = label;
+        });
+      });
+
+      togglePrintBtn.addEventListener('click', () => {
+        document.body.classList.add('print-mode');
+      });
+
+      restoreBarBtn.addEventListener('click', () => {
+        document.body.classList.remove('print-mode');
+      });
+    })();
+  </script>
+</body>
+</html>
